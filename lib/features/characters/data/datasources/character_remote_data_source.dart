@@ -39,7 +39,7 @@ class CharacterRemoteDataSourceImpl implements CharacterRemoteDataSource {
   @override
   Future<CharacterModel> getCharacterDetail(int id) async {
     try {
-      final response = await dio.get('$Endpoints.character}/$id');
+      final response = await dio.get('${Endpoints.characters}/$id');
       return CharacterModel.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ApiException(
