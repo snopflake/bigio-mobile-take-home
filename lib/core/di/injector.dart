@@ -12,6 +12,8 @@ import '../../features/characters/domain/usecases/get_characters.dart';
 import '../../features/characters/domain/usecases/get_character_detail.dart';
 import '../../features/characters/domain/usecases/search_characters.dart';
 
+import '../../features/characters/presentation/bloc/home/home_bloc.dart';
+
 final sl = GetIt.instance;
 
 Future<void> setupInjector() async {
@@ -44,5 +46,10 @@ void _registerCore() {
   );
   sl.registerLazySingleton<SearchCharacters>(
     () => SearchCharacters(sl())
+  );
+
+  // Blocs
+  sl.registerFactory<HomeBloc>(
+    () => HomeBloc(getCharacters: sl())
   );
 }
