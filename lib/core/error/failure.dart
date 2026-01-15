@@ -15,8 +15,8 @@ class ServerFailure extends Failure {
   });
 }
 
-class NerworkFailure extends Failure {
-  const NerworkFailure({
+class NetworkFailure extends Failure {
+  const NetworkFailure({
     required super.message,
     super.statusCode
   });
