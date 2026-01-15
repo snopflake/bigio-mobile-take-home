@@ -17,7 +17,7 @@ class CharacterModel {
     required this.image,
   });
 
-  factory CharacterModel.fromJason(Map<String, dynamic> json) {
+  factory CharacterModel.fromJson(Map<String, dynamic> json) {
     return CharacterModel(
       id: json['id'] as int,
       name: (json['name'] ?? '') as String,
