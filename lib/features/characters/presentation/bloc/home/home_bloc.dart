@@ -7,7 +7,7 @@ import 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetCharacters getCharacters;
 
-  HomeBloc({required this.getCharacters}) : super(const Homeinitial()) {
+  HomeBloc({required this.getCharacters}) : super(const HomeInitial()) {
     on<HomeFetchRequested>(_onFetchRequested);
   }
 
