@@ -5,6 +5,8 @@ import '../network/dio_client.dart';
 import '../routes/app_router.dart';
 
 import '../../features/characters/data/datasources/character_remote_data_source.dart';
+import '../../features/characters/data/repositories/character_repository_impl.dart';
+import '../../features/characters/domain/repositories/character_repository.dart';
 
 final sl = GetIt.instance;
 
@@ -22,5 +24,10 @@ void _registerCore() {
   // Data Sources
   sl.registerLazySingleton<CharacterRemoteDataSource>(
     () => CharacterRemoteDataSourceImpl(sl()),
+  );
+
+  // Character Repositories
+  sl.registerLazySingleton<CharacterRepository>(
+    () => CharacterRepositoryImpl(sl()),
   );
 }
