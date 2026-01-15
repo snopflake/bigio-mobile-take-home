@@ -1,3 +1,5 @@
+import '../../domain/entities/character.dart';
+
 class CharacterModel {
   final int id;
   final String name;
@@ -26,6 +28,20 @@ class CharacterModel {
       origin: (json['origin']['name'] ?? '') as String,
       location: (json['location']['name'] ?? '') as String,
       image: (json['image'] ?? '') as String,
+    );
+  }
+}
+
+extension CharacterModelMapper on CharacterModel {
+  Character toEntity() {
+    return Character(
+      id: id,
+      name: name,
+      species: species,
+      gender: gender,
+      origin: origin,
+      location: location,
+      image: image,
     );
   }
 }
