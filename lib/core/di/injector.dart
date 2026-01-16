@@ -27,6 +27,8 @@ import '../../features/characters/domain/usecases/is_favorite.dart';
 import '../../features/characters/domain/usecases/add_favorite.dart';
 import '../../features/characters/domain/usecases/remove_favorite.dart';
 
+import '../../features/characters/presentation/bloc/favorites/favorites_bloc.dart';
+
 final sl = GetIt.instance;
 
 Future<void> setupInjector() async {
@@ -106,5 +108,13 @@ void _registerCore() {
   );
   sl.registerLazySingleton(
     () => RemoveFavorite(sl())    
+  );
+
+  // Favorites Bloc
+  sl.registerFactory<FavoritesBloc>(
+    () => FavoritesBloc(
+      getFavorites: sl(),
+      removeFavorite: sl(),
+    ),
   );
 }
