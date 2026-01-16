@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injector.dart';
+import '../../../../core/testing/app_keys.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/app_loading_dialog.dart';
@@ -168,6 +169,7 @@ class _SearchBarState extends State<_SearchBar> {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      key: AppKeys.homeSearchField,
       focusNode: _focusNode,
       controller: widget.controller,
       textInputAction: TextInputAction.search,
@@ -189,7 +191,7 @@ class _SearchBarState extends State<_SearchBar> {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide(
-            color: AppColors.secondary, // kuning saat fokus
+            color: AppColors.secondary,
             width: 1.4,
           ),
         ),
@@ -221,6 +223,7 @@ class _FavoritesButton extends StatelessWidget {
     return SizedBox(
       height: 40.h,
       child: OutlinedButton.icon(
+        key: AppKeys.homeFavoritesButton,
         onPressed: onTap,
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
@@ -262,6 +265,7 @@ class _CharacterGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         final c = characters[index];
         return _CharacterCard(
+          key: AppKeys.characterCard(c.id),
           name: c.name,
           subtitle: '${c.species} - ${c.gender}',
           imageUrl: c.image,
@@ -279,6 +283,7 @@ class _CharacterCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const _CharacterCard({
+    super.key,
     required this.name,
     required this.subtitle,
     required this.imageUrl,
