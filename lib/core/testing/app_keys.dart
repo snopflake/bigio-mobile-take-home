@@ -23,5 +23,6 @@ class AppKeys {
   static const favoritesList = Key('favorites_list');
   static const favoritesEmptyText = Key('favorites_empty_text');
   static Key favoriteCard(int id) => ValueKey('favorite_card_$id');
-
+  static Key favoriteToggle(int id) => Key('favorite_toggle_$id');
+  
 }

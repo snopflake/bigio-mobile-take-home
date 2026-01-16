@@ -1,3 +1,4 @@
+import 'package:bigio_rick_morty/core/testing/app_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -57,6 +58,7 @@ class CharacterCard extends StatelessWidget {
                     top: 6.h,
                     right: 6.w,
                     child: InkWell(
+                      key: AppKeys.favoriteToggle(character.id),
                       onTap: () => context.read<FavoritesSyncCubit>().toggle(character),
                       borderRadius: BorderRadius.circular(999),
                       child: Container(
