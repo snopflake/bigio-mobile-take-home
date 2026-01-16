@@ -14,6 +14,7 @@ import '../../features/characters/domain/usecases/search_characters.dart';
 
 import '../../features/characters/presentation/bloc/home/home_bloc.dart';
 import '../../features/characters/presentation/bloc/detail/detail_bloc.dart';
+import '../../features/characters/presentation/bloc/search/search_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -56,5 +57,9 @@ void _registerCore() {
 
   sl.registerFactory<DetailBloc>(
     () => DetailBloc(getCharacterDetail: sl())
+  );
+
+  sl.registerFactory<SearchBloc>(
+    () => SearchBloc(searchCharacters: sl()),
   );
 }
