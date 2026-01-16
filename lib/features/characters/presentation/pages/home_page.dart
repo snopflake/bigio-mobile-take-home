@@ -11,116 +11,351 @@ import '../bloc/home/home_bloc.dart';
 import '../bloc/home/home_event.dart';
 import '../bloc/home/home_state.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final _searchCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => sl<HomeBloc>()..add(const HomeFetchRequested()),
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Characters', style: AppTextStyles.title),
-        ),
-        body: BlocListener<HomeBloc, HomeState>(
-          listener: (context, state) {
-            if (state is HomeLoading) {
-              AppLoadingDialog.show(
-                context,
-                message: 'Mengambil data karakter...',
-              );
-            } else {
-              AppLoadingDialog.hide(context);
-            }
-          },
-          child: BlocBuilder<HomeBloc, HomeState>(
-            builder: (context, state) {
+        body: SafeArea(
+          child: BlocListener<HomeBloc, HomeState>(
+            listener: (context, state) {
               if (state is HomeLoading) {
-                return const SizedBox.shrink();
+                AppLoadingDialog.show(context, message: 'Mengambil data karakter...');
+              } else {
+                AppLoadingDialog.hide(context);
               }
-
-              if (state is HomeError) {
-                return Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Text(
-                      state.message,
-                      style: AppTextStyles.body,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                );
-              }
-
-              if (state is HomeEmpty) {
-                return Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Text(
-                      'No characters found',
-                      style: AppTextStyles.body,
-                    ),
-                  ),
-                );
-              }
-
-              if (state is HomeLoaded) {
-                return ListView.separated(
-                  padding: EdgeInsets.symmetric(vertical: 8.h),
-                  itemCount: state.characters.length,
-                  separatorBuilder: (_, __) => Divider(
-                    height: 1.h,
-                    color: Colors.black12,
-                  ),
-                  itemBuilder: (context, index) {
-                    final c = state.characters[index];
-
-                    return ListTile(
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16.w,
-                        vertical: 6.h,
-                      ),
-                      title: Text(
-                        c.name,
-                        style: AppTextStyles.body.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      subtitle: Text(
-                        '${c.species} • ${c.gender}',
-                        style: AppTextStyles.caption,
-                      ),
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(999.r),
-                        child: Image.network(
-                          c.image,
-                          width: 44.w,
-                          height: 44.w,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            width: 44.w,
-                            height: 44.w,
-                            alignment: Alignment.center,
-                            color: Colors.black12,
-                            child: const Icon(Icons.broken_image),
-                          ),
-                        ),
-                      ),
-                      onTap: () {
-                        context.pushNamed(
-                          'detail',
-                          pathParameters: {'id': '${c.id}'},
-                        );
-                      },
-                    );
-                  },
-                );
-              }
-
-              return const SizedBox.shrink();
             },
+            child: ListView(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
+              children: [
+                const _Header(),
+                SizedBox(height: 14.h),
+                _SearchBar(
+                  controller: _searchCtrl,
+                  onSubmitted: (q) {
+                    final query = q.trim();
+                    if (query.isEmpty) return;
+                    context.pushNamed('search', queryParameters: {'q': query});
+                  },
+                  onTapIcon: () {
+                    final query = _searchCtrl.text.trim();
+                    if (query.isEmpty) return;
+                    context.pushNamed('search', queryParameters: {'q': query});
+                  },
+                ),
+                SizedBox(height: 10.h),
+                _FavoritesButton(
+                  onTap: () => context.pushNamed('favorites'),
+                ),
+                SizedBox(height: 18.h),
+                BlocBuilder<HomeBloc, HomeState>(
+                  builder: (context, state) {
+                    if (state is HomeLoading) {
+                      return const SizedBox.shrink();
+                    }
+
+                    if (state is HomeError) {
+                      return _CenteredMessage(state.message);
+                    }
+
+                    if (state is HomeEmpty) {
+                      return const _CenteredMessage('No characters found');
+                    }
+
+                    if (state is HomeLoaded) {
+                      return _CharacterGrid(
+                        characters: state.characters,
+                        onTap: (id) => context.pushNamed(
+                          'detail',
+                          pathParameters: {'id': '$id'},
+                        ),
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ],
+            ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          'MORTY VERSE',
+          style: AppTextStyles.title.copyWith(
+            fontSize: 24.sp,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.4,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: 4.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Explore Morty Verse Characters!',
+              style: AppTextStyles.body,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _SearchBar extends StatefulWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onSubmitted;
+  final VoidCallback onTapIcon;
+
+  const _SearchBar({
+    required this.controller,
+    required this.onSubmitted,
+    required this.onTapIcon,
+  });
+
+  @override
+  State<_SearchBar> createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<_SearchBar> {
+  final _focusNode = FocusNode();
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      if (!mounted) return;
+      setState(() => _focused = _focusNode.hasFocus);
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      focusNode: _focusNode,
+      controller: widget.controller,
+      textInputAction: TextInputAction.search,
+      onSubmitted: widget.onSubmitted,
+      cursorColor: AppColors.primary,
+      decoration: InputDecoration(
+        hintText: 'Search',
+        hintStyle: AppTextStyles.caption,
+        contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+        filled: true,
+        fillColor: AppColors.surface,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.r),
+          borderSide: BorderSide(
+            color: AppColors.primary.withValues(alpha: 0.7),
+            width: 1,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.r),
+          borderSide: BorderSide(
+            color: AppColors.secondary, // kuning saat fokus
+            width: 1.4,
+          ),
+        ),
+        suffixIcon: InkWell(
+          onTap: widget.onTapIcon,
+          splashColor: AppColors.secondary.withValues(alpha: 0.25),
+          highlightColor: Colors.transparent,
+          child: Padding(
+            padding: EdgeInsets.all(10.w),
+            child: Icon(
+              Icons.search,
+              size: 18.sp,
+              color: _focused ? AppColors.secondary : AppColors.primary,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FavoritesButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _FavoritesButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 40.h,
+      child: OutlinedButton.icon(
+        onPressed: onTap,
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
+          side: BorderSide(color: Colors.grey.shade300),
+          backgroundColor: Colors.white,
+          foregroundColor: AppColors.textPrimary,
+        ),
+        icon: Icon(Icons.favorite, size: 18.sp, color: AppColors.primary),
+        label: Text(
+          'Your favourite character',
+          style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
+}
+
+class _CharacterGrid extends StatelessWidget {
+  final List<dynamic> characters;
+  final void Function(int id) onTap;
+
+  const _CharacterGrid({
+    required this.characters,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      itemCount: characters.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 14.h,
+        crossAxisSpacing: 14.w,
+        childAspectRatio: 0.78,
+      ),
+      itemBuilder: (context, index) {
+        final c = characters[index];
+        return _CharacterCard(
+          name: c.name,
+          subtitle: '${c.species} - ${c.gender}',
+          imageUrl: c.image,
+          onTap: () => onTap(c.id),
+        );
+      },
+    );
+  }
+}
+
+class _CharacterCard extends StatelessWidget {
+  final String name;
+  final String subtitle;
+  final String imageUrl;
+  final VoidCallback onTap;
+
+  const _CharacterCard({
+    required this.name,
+    required this.subtitle,
+    required this.imageUrl,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(14.r),
+      onTap: onTap,
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14.r),
+          side: BorderSide(color: Colors.grey.shade300, width: 1),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(8.w),
+          child: Column(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.r),
+                child: AspectRatio(
+                  aspectRatio: 1.05,
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      color: Colors.black12,
+                      alignment: Alignment.center,
+                      child: const Icon(Icons.broken_image),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Flexible(
+                child: Text(
+                  name,
+                  style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(height: 2.h),
+              Flexible(
+                child: Text(
+                  subtitle,
+                  style: AppTextStyles.caption,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CenteredMessage extends StatelessWidget {
+  final String message;
+  const _CenteredMessage(this.message);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: 80.h),
+      child: Center(
+        child: Text(
+          message,
+          style: AppTextStyles.body,
+          textAlign: TextAlign.center,
         ),
       ),
     );
