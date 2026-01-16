@@ -19,6 +19,14 @@ import '../../features/characters/presentation/bloc/search/search_bloc.dart';
 import '../local_db/app_database.dart';
 import '../../features/characters/data/datasources/favorites_local_data_source.dart';
 
+import '../../features/characters/domain/repositories/favorites_repository.dart';
+import '../../features/characters/data/repositories/favorites_repository_impl.dart';
+
+import '../../features/characters/domain/usecases/get_favorites.dart';
+import '../../features/characters/domain/usecases/is_favorite.dart';
+import '../../features/characters/domain/usecases/add_favorite.dart';
+import '../../features/characters/domain/usecases/remove_favorite.dart';
+
 final sl = GetIt.instance;
 
 Future<void> setupInjector() async {
@@ -76,4 +84,22 @@ void _registerCore() {
     () => FavoritesLocalDataSourceImpl(sl()),
   );
 
+  // Favorites Repository
+  sl.registerLazySingleton<FavoritesRepository>(
+    () => FavoritesRepositoryImpl(sl()),
+  );
+
+  // Favorites UseCases
+  sl.registerLazySingleton(
+    () => GetFavorites(sl())
+  );
+  sl.registerLazySingleton(
+    () => IsFavorite(sl())
+  );
+  sl.registerLazySingleton(
+    () => AddFavorite(sl())
+  );
+  sl.registerLazySingleton(
+    () => RemoveFavorite(sl())    
+  );
 }
