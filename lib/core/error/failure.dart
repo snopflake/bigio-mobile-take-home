@@ -28,3 +28,9 @@ class UnknownFailure extends Failure {
     super.statusCode
   });
 }
+
+class CacheFailure extends Failure {
+  const CacheFailure({
+    required super.message
+  });
+}
