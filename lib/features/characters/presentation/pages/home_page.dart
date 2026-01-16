@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injector.dart';
 import '../bloc/home/home_bloc.dart';
@@ -42,8 +43,7 @@ class HomePage extends StatelessWidget {
                       backgroundImage: NetworkImage(c.image),
                     ),
                     onTap: () {
-                      // detailpage
-                      // context.pushNamed('detail', pathParameters: {'id': '${c.id}'});
+                      context.pushNamed('detail', pathParameters: {'id': '${c.id}'});
                     },
                   );
                 },

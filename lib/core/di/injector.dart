@@ -13,6 +13,7 @@ import '../../features/characters/domain/usecases/get_character_detail.dart';
 import '../../features/characters/domain/usecases/search_characters.dart';
 
 import '../../features/characters/presentation/bloc/home/home_bloc.dart';
+import '../../features/characters/presentation/bloc/detail/detail_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -51,5 +52,9 @@ void _registerCore() {
   // Blocs
   sl.registerFactory<HomeBloc>(
     () => HomeBloc(getCharacters: sl())
+  );
+
+  sl.registerFactory<DetailBloc>(
+    () => DetailBloc(getCharacterDetail: sl())
   );
 }
