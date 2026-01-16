@@ -102,7 +102,7 @@ lib/
 ---
 
 ## APK Link
-Upload APK to Google Drive and paste the share link below:
+Download BIGIO - Morty Verse from the link below
 
 Google Drive Folder (APK):
 https://drive.google.com/drive/u/4/folders/10PINeXvTqTORjC_pQBDlYEbJlmDjqnl0
