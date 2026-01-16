@@ -66,33 +66,36 @@ It implements **Clean Architecture (data/domain/presentation)** with **BLoC** st
 ---
 
 ## Project Structure
-Clean Architecture (data / domain / presentation) is applied under `lib/features`.
+
+Clean Architecture (data / domain / presentation) is applied under `lib/`.
 
 lib/
-core/
-di/ # GetIt setupInjector()
-error/ # Failure models
-local_db/ # SQLite database helper
-network/ # Dio client config
-routes/ # GoRouter routes
-testing/ # AppKeys for widget testing
-theme/ # Theme setup
-widgets/ # Shared widgets
-features/
-characters/
-data/
-datasources/ # Remote + local data sources
-models/ # DTO / model mapping
-repositories/ # Repository implementations
-domain/
-entities/ # Character entity
-repositories/ # Repository contracts
-usecases/ # GetCharacters, GetCharacterDetail, SearchCharacters, Favorites usecases
-presentation/
-bloc/ # HomeBloc, DetailBloc, SearchBloc, FavoritesBloc, FavoritesSyncCubit
-pages/ # HomePage, DetailPage, SearchPage, FavoritesPage
-widgets/ # CharacterCard etc.
-main.dart # App bootstrap + router + cubit provider
+├─ core/
+│ ├─ di/ # GetIt setupInjector
+│ ├─ error/ # Failure models
+│ ├─ local_db/ # SQLite database helper
+│ ├─ network/ # Dio client config
+│ ├─ routes/ # GoRouter routes
+│ ├─ testing/ # AppKeys for widget testing
+│ ├─ theme/ # App theme setup
+│ └─ widgets/ # Shared widgets
+│
+├─ features/
+│ └─ characters/
+│ ├─ data/
+│ │ ├─ datasources/ # Remote & local data sources
+│ │ ├─ models/ # DTO / model mapping
+│ │ └─ repositories/ # Repository implementations
+│ ├─ domain/
+│ │ ├─ entities/ # Character entity
+│ │ ├─ repositories/ # Repository contracts
+│ │ └─ usecases/ # GetCharacters, Detail, Search, Favorites
+│ └─ presentation/
+│ ├─ bloc/ # HomeBloc, DetailBloc, SearchBloc, Favorites
+│ ├─ pages/ # Home, Detail, Search, Favorites pages
+│ └─ widgets/ # CharacterCard, etc.
+│
+└─ main.dart # App bootstrap & router
 
 ---
 
