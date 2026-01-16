@@ -14,6 +14,7 @@ import '../../domain/entities/character.dart';
 import '../bloc/search/search_bloc.dart';
 import '../bloc/search/search_event.dart';
 import '../bloc/search/search_state.dart';
+import '../widgets/character_card.dart';
 
 class SearchPage extends StatefulWidget {
   final String initialQuery;
@@ -120,15 +121,14 @@ class _SearchPageState extends State<SearchPage> {
               children: [
                 _SearchBar(
                   controller: _ctrl,
-                  onChanged: _onChanged,         
-                  onSubmitted: _submit,           
+                  onChanged: _onChanged,
+                  onSubmitted: _submit,
                   onTapIcon: () => _submit(_ctrl.text),
                   onClear: _clear,
                 ),
                 SizedBox(height: 18.h),
                 BlocBuilder<SearchBloc, SearchState>(
                   builder: (context, state) {
-
                     if (state is SearchLoading) return const SizedBox.shrink();
 
                     if (state is SearchError) {
@@ -206,8 +206,8 @@ class _SearchBarState extends State<_SearchBar> {
       focusNode: _focusNode,
       controller: widget.controller,
       textInputAction: TextInputAction.search,
-      onChanged: widget.onChanged,       // ✅ auto-search typing
-      onSubmitted: widget.onSubmitted,   // optional
+      onChanged: widget.onChanged,
+      onSubmitted: widget.onSubmitted,
       cursorColor: AppColors.primary,
       decoration: InputDecoration(
         hintText: 'Search character name',
@@ -285,86 +285,13 @@ class _CharacterGrid extends StatelessWidget {
       ),
       itemBuilder: (context, index) {
         final c = characters[index];
-        return _CharacterCard(
+
+        return CharacterCard(
           key: AppKeys.characterCard(c.id),
-          name: c.name,
-          subtitle: '${c.species} - ${c.gender}',
-          imageUrl: c.image,
+          character: c,
           onTap: () => onTap(c.id),
         );
       },
-    );
-  }
-}
-
-class _CharacterCard extends StatelessWidget {
-  final String name;
-  final String subtitle;
-  final String imageUrl;
-  final VoidCallback onTap;
-
-  const _CharacterCard({
-    super.key,
-    required this.name,
-    required this.subtitle,
-    required this.imageUrl,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(14.r),
-      onTap: onTap,
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14.r),
-          side: BorderSide(color: Colors.grey.shade300, width: 1),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(8.w),
-          child: Column(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12.r),
-                child: AspectRatio(
-                  aspectRatio: 1.05,
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: Colors.black12,
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.broken_image),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Flexible(
-                child: Text(
-                  name,
-                  style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              SizedBox(height: 2.h),
-              Flexible(
-                child: Text(
-                  subtitle,
-                  style: AppTextStyles.caption,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

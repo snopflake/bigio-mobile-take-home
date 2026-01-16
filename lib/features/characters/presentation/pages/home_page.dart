@@ -11,6 +11,7 @@ import '../../../../core/widgets/app_loading_dialog.dart';
 import '../bloc/home/home_bloc.dart';
 import '../bloc/home/home_event.dart';
 import '../bloc/home/home_state.dart';
+import '../widgets/character_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 const _Header(),
                 SizedBox(height: 14.h),
-               _SearchBar(
+                _SearchBar(
                   controller: _searchCtrl,
                   onTapSearch: () => context.pushNamed('search'),
                 ),
@@ -254,86 +255,13 @@ class _CharacterGrid extends StatelessWidget {
       ),
       itemBuilder: (context, index) {
         final c = characters[index];
-        return _CharacterCard(
+
+        return CharacterCard(
           key: AppKeys.characterCard(c.id),
-          name: c.name,
-          subtitle: '${c.species} - ${c.gender}',
-          imageUrl: c.image,
+          character: c,
           onTap: () => onTap(c.id),
         );
       },
-    );
-  }
-}
-
-class _CharacterCard extends StatelessWidget {
-  final String name;
-  final String subtitle;
-  final String imageUrl;
-  final VoidCallback onTap;
-
-  const _CharacterCard({
-    super.key,
-    required this.name,
-    required this.subtitle,
-    required this.imageUrl,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(14.r),
-      onTap: onTap,
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14.r),
-          side: BorderSide(color: Colors.grey.shade300, width: 1),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(8.w),
-          child: Column(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12.r),
-                child: AspectRatio(
-                  aspectRatio: 1.05,
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: Colors.black12,
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.broken_image),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Flexible(
-                child: Text(
-                  name,
-                  style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              SizedBox(height: 2.h),
-              Flexible(
-                child: Text(
-                  subtitle,
-                  style: AppTextStyles.caption,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
