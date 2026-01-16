@@ -16,6 +16,9 @@ import '../../features/characters/presentation/bloc/home/home_bloc.dart';
 import '../../features/characters/presentation/bloc/detail/detail_bloc.dart';
 import '../../features/characters/presentation/bloc/search/search_bloc.dart';
 
+import '../local_db/app_database.dart';
+import '../../features/characters/data/datasources/favorites_local_data_source.dart';
+
 final sl = GetIt.instance;
 
 Future<void> setupInjector() async {
@@ -29,7 +32,7 @@ void _registerCore() {
   // Network
   sl.registerLazySingleton<Dio>(() => DioClient.create());
 
-  // Data Sources
+  // Character Data Sources
   sl.registerLazySingleton<CharacterRemoteDataSource>(
     () => CharacterRemoteDataSourceImpl(sl()),
   );
@@ -62,4 +65,15 @@ void _registerCore() {
   sl.registerFactory<SearchBloc>(
     () => SearchBloc(searchCharacters: sl()),
   );
+
+  // Local DB
+  sl.registerLazySingleton<AppDatabase>(
+    () => AppDatabase.instance
+  );
+
+  // Favorites Local Data Source
+  sl.registerLazySingleton<FavoritesLocalDataSource>(
+    () => FavoritesLocalDataSourceImpl(sl()),
+  );
+
 }
