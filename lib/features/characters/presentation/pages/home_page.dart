@@ -47,18 +47,9 @@ class _HomePageState extends State<HomePage> {
               children: [
                 const _Header(),
                 SizedBox(height: 14.h),
-                _SearchBar(
+               _SearchBar(
                   controller: _searchCtrl,
-                  onSubmitted: (q) {
-                    final query = q.trim();
-                    if (query.isEmpty) return;
-                    context.pushNamed('search', queryParameters: {'q': query});
-                  },
-                  onTapIcon: () {
-                    final query = _searchCtrl.text.trim();
-                    if (query.isEmpty) return;
-                    context.pushNamed('search', queryParameters: {'q': query});
-                  },
+                  onTapSearch: () => context.pushNamed('search'),
                 ),
                 SizedBox(height: 10.h),
                 _FavoritesButton(
@@ -134,13 +125,11 @@ class _Header extends StatelessWidget {
 
 class _SearchBar extends StatefulWidget {
   final TextEditingController controller;
-  final ValueChanged<String> onSubmitted;
-  final VoidCallback onTapIcon;
+  final VoidCallback onTapSearch;
 
   const _SearchBar({
     required this.controller,
-    required this.onSubmitted,
-    required this.onTapIcon,
+    required this.onTapSearch,
   });
 
   @override
@@ -173,7 +162,8 @@ class _SearchBarState extends State<_SearchBar> {
       focusNode: _focusNode,
       controller: widget.controller,
       textInputAction: TextInputAction.search,
-      onSubmitted: widget.onSubmitted,
+      readOnly: true,
+      onTap: widget.onTapSearch,
       cursorColor: AppColors.primary,
       decoration: InputDecoration(
         hintText: 'Search',
@@ -196,7 +186,7 @@ class _SearchBarState extends State<_SearchBar> {
           ),
         ),
         suffixIcon: InkWell(
-          onTap: widget.onTapIcon,
+          onTap: widget.onTapSearch,
           splashColor: AppColors.secondary.withValues(alpha: 0.25),
           highlightColor: Colors.transparent,
           child: Padding(

@@ -51,8 +51,12 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.search,
         name: 'search',
-        builder: (context, state) => const SearchPage(),
+        builder: (context, state) {
+          final q = state.uri.queryParameters['q'] ?? '';
+          return SearchPage(initialQuery: q);
+        },
       ),
+
     ],
 
     errorBuilder: (context, state) =>  Scaffold(
