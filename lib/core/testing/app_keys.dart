@@ -19,4 +19,9 @@ class AppKeys {
   static const searchField = Key('search_field');
   static const searchClearButton = Key('search_clear_button');
 
+  // FavoritesPage Keys
+  static const favoritesList = Key('favorites_list');
+  static const favoritesEmptyText = Key('favorites_empty_text');
+  static Key favoriteCard(int id) => ValueKey('favorite_card_$id');
+
 }
