@@ -2,15 +2,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/failure.dart';
+import '../../../domain/entities/character.dart';
 import '../../../domain/usecases/get_character_detail.dart';
+import '../../../domain/usecases/is_favorite.dart';
+import '../../../domain/usecases/add_favorite.dart';
+import '../../../domain/usecases/remove_favorite.dart';
 import 'detail_event.dart';
 import 'detail_state.dart';
 
 class DetailBloc extends Bloc<DetailEvent, DetailState> {
   final GetCharacterDetail getCharacterDetail;
 
+  // Favorites Usecases
+  final IsFavorite isFavorite;
+  final AddFavorite addFavorite;
+  final RemoveFavorite removeFavorite;
+
   DetailBloc({
     required this.getCharacterDetail,
+    required this.isFavorite,
+    required this.addFavorite,
+    required this.removeFavorite,
   }) : super(const DetailLoading()) {
     on<DetailStarted>(_onStarted);
     on<DetailFavoriteToggled>(_onFavoriteToggled);
@@ -21,16 +33,17 @@ class DetailBloc extends Bloc<DetailEvent, DetailState> {
 
     final Either<Failure, dynamic> result = await getCharacterDetail(event.id);
 
-    result.fold(
-      (failure) => emit(DetailError(failure.message)),
+    await result.fold(
+      (failure) async => emit(DetailError(failure.message)),
       (character) async {
         if (character == null) {
           emit(const DetailEmpty());
           return;
         }
 
-        // TODO(SQLite): await _loadFavoriteStatus(character.id)
-        final isFav = false;
+        // Load favorite status dari SQLite
+        final favEither = await isFavorite(character.id);
+        final isFav = favEither.getOrElse(() => false);
 
         emit(DetailLoaded(character: character, isFavorite: isFav));
       },
@@ -44,13 +57,18 @@ class DetailBloc extends Bloc<DetailEvent, DetailState> {
     final current = state;
     if (current is! DetailLoaded) return;
 
-    final nextFav = !current.isFavorite;
+    final Character character = current.character;
+    final bool nextFav = !current.isFavorite;
 
-    // Optimistic update (UX lebih bagus)
     emit(current.copyWith(isFavorite: nextFav));
 
-    // TODO(SQLite): persist favorite status
-    // final ok = await _persistFavorite(current.character, nextFav);
-    // if (!ok) emit(current); // rollback kalau gagal
+    final Either<Failure, Unit> persistResult = nextFav
+        ? await addFavorite(character)
+        : await removeFavorite(character.id);
+
+    persistResult.fold(
+      (_) => emit(current), 
+      (_) {}, 
+    );
   }
 }

@@ -67,7 +67,12 @@ void _registerCore() {
   );
 
   sl.registerFactory<DetailBloc>(
-    () => DetailBloc(getCharacterDetail: sl())
+    () => DetailBloc(
+      getCharacterDetail: sl(),
+      isFavorite: sl(),
+      addFavorite: sl(),
+      removeFavorite: sl(),
+    ),
   );
 
   sl.registerFactory<SearchBloc>(
