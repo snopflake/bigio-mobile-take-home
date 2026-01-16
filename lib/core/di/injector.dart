@@ -29,6 +29,8 @@ import '../../features/characters/domain/usecases/remove_favorite.dart';
 
 import '../../features/characters/presentation/bloc/favorites/favorites_bloc.dart';
 
+import '../../features/characters/presentation/bloc/favorites_sync/favorites_sync_cubit.dart';
+
 final sl = GetIt.instance;
 
 Future<void> setupInjector() async {
@@ -117,4 +119,14 @@ void _registerCore() {
       removeFavorite: sl(),
     ),
   );
+
+  // Favorites Sync Cubit
+  sl.registerLazySingleton<FavoritesSyncCubit>(
+    () => FavoritesSyncCubit(
+      getFavorites: sl(),
+      addFavorite: sl(),
+      removeFavorite: sl(),
+    ),
+  );
+
 }

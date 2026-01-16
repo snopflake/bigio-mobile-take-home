@@ -5,6 +5,9 @@ import 'package:get_it/get_it.dart';
 import 'core/di/injector.dart';
 import 'core/routes/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'features/characters/presentation/bloc/favorites_sync/favorites_sync_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,11 +27,14 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (_, __) {
-        return MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          title: 'Bigio Rick & Morty',
-          routerConfig: appRouter.router,
-          theme: AppTheme.light(),
+        return BlocProvider<FavoritesSyncCubit>(
+          create: (_) => sl<FavoritesSyncCubit>()..load(),
+          child: MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'Bigio Rick & Morty',
+            routerConfig: appRouter.router,
+            theme: AppTheme.light(),
+          ),
         );
       },
     );
